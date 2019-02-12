@@ -1,4 +1,6 @@
-
+library(forecast)
+library(splines)
+library(stats)
 
 eva = function(X, b1, b2){
   res <- c()
@@ -52,8 +54,6 @@ eva = function(X, b1, b2){
 
 
 
-library(forecast)
-
 smoothing <- function(data, param=3) {
   len = length(data$secs)-floor(param/2)
   vector_list = data$secs[(1+floor(param/2)):len]
@@ -68,3 +68,15 @@ smoothing <- function(data, param=3) {
 }
 
 
+smoothing_spline <- function(data, df=40, degree=3) {
+  smoothed <- data[["secs"]]
+  basis <- bs(data[["secs"]], df=df, degree=degree, intercept=TRUE)
+  for (i in 1:dim(data)[2]) {
+    if (colnames(data)[i] != "secs") {
+      fit <- lm(data[[i]]~basis-1, data = data)
+      smoothed <- cbind(smoothed, predict(fit))
+    }
+  }
+  colnames(smoothed) <- colnames(data)
+  data.frame(smoothed)
+}
