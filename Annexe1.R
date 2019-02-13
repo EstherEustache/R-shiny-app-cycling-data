@@ -69,6 +69,7 @@ smoothing <- function(data, param=3) {
 
 
 smoothing_spline <- function(data, df=40, degree=3) {
+  df <- 100-df
   smoothed <- data[["secs"]]
   basis <- bs(data[["secs"]], df=df, degree=degree, intercept=TRUE)
   for (i in 1:dim(data)[2]) {
